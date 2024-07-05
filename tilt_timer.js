@@ -1,12 +1,12 @@
-﻿// tilt_timer.js
+// tilt_timer.js
 
 class TiltTimer {
-  constructor(team) { // team パラメータを追加
+  constructor(team) {
     this.timerRunning = false;
     this.startTime = 0;
     this.totalTime = 0;
     this.records = [];
-    this.team = team; // この行を追加
+    this.team = team;
   }
 
   startStopTimer() {
@@ -90,25 +90,25 @@ function updateTimerLabels() {
 function checkTilt(event) {
   if (!tiltDetectionEnabled) return;
 
-  const { beta, gamma } = event; // beta is the front/back tilt in degrees, gamma is the left/right tilt in degrees
-  const rightTiltThreshold = 45; // 左右に傾けた時の閾値
+  const { beta, gamma } = event;
+  const rightTiltThreshold = 45;
 
-  if (gamma < -rightTiltThreshold || gamma > rightTiltThreshold) { // 左右に傾いたとき
+  if (gamma < -rightTiltThreshold || gamma > rightTiltThreshold) {
     if (timer1.timerRunning) timer1.stopTimer();
     if (timer2.timerRunning) timer2.stopTimer();
     document.body.style.backgroundColor = 'white';
-  } else if (beta > 45 && beta < 135) { // 画面が前に45度から135度の間に傾いたとき
+  } else if (beta > 45 && beta < 135) {
     if (!timer2.timerRunning) {
       timer1.stopTimer();
       timer2.startStopTimer();
     }
-    document.body.style.backgroundColor = '#ffcccc'; // 薄い赤背景
-  } else if (beta >= -45 && beta <= 45) { // 画面が上向きのとき（プラスマイナス45度）
+    document.body.style.backgroundColor = '#ffcccc';
+  } else if (beta >= -45 && beta <= 45) {
     if (!timer1.timerRunning) {
       timer2.stopTimer();
       timer1.startStopTimer();
     }
-    document.body.style.backgroundColor = '#ccffcc'; // 薄い緑背景
+    document.body.style.backgroundColor = '#ccffcc';
   } else {
     timer1.stopTimer();
     timer2.stopTimer();
@@ -143,8 +143,8 @@ resetButton.addEventListener('click', () => {
     timer2.stopTimer();
     startButton.disabled = true;
     resetButton.textContent = 'リセット';
-    dial1.value = 11; // dial1の値をリセット
-    dial2.value = 11; // dial2の値をリセット
+    dial1.value = 11;
+    dial2.value = 11;
     document.body.style.backgroundColor = 'white';
     generateReportButton.classList.remove('hidden');
   } else {
@@ -156,8 +156,8 @@ resetButton.addEventListener('click', () => {
     timer1Label.textContent = '0:00.0';
     timer2Label.textContent = '0:00.0';
     percentageLabel.textContent = '00%';
-    dial1.value = 11; // dial1の値をリセット
-    dial2.value = 11; // dial2の値をリセット
+    dial1.value = 11;
+    dial2.value = 11;
     document.body.style.backgroundColor = 'white';
   }
 });
@@ -188,7 +188,6 @@ function generateReport() {
   let currentTeam = null;
   let currentStartTime = null;
 
-  // Merge and sort records
   const allRecords = [...timer1Records.map(r => ({ ...r, team: '自' })), ...timer2Records.map(r => ({ ...r, team: '相手' }))];
   allRecords.sort((a, b) => a.time - b.time);
 
@@ -211,13 +210,15 @@ function drawRectangles(reportData) {
   const canvas = document.getElementById('chart');
   const ctx = canvas.getContext('2d');
   const height = 20;
-  const totalDuration = 360; // 6分 = 360秒
-  const canvasWidth = 720; // 表示幅720px
+  const totalDuration = 360;
+  const canvasWidth = 720;
   const scale = canvasWidth / totalDuration;
   let x = 0;
 
   canvas.width = canvasWidth;
   canvas.height = height;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   reportData.forEach(data => {
     const width = data.duration * scale;
@@ -229,7 +230,6 @@ function drawRectangles(reportData) {
 
 updateDateTime();
 
-// スリープを防止するための設定
 let wakeLock = null;
 
 async function requestWakeLock() {
@@ -244,7 +244,6 @@ async function requestWakeLock() {
   }
 }
 
-// 定期的にスリープを防止する
 setInterval(() => {
   if (!wakeLock) {
     requestWakeLock();
